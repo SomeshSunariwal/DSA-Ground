@@ -5,9 +5,27 @@ import { fetchProblemListStart } from "../../data_store/problemList_store";
 
 export default function ProblemList() {
 
-    const [problemList, setProblemList] = useState(null);
+    const [searchText, setSearchText] = useState("");
+    const [level, setLevel] = useState("");
+    const [categoryFilterValue, setCategoryFilterValue] = useState("");
     const [selectedId, setSelectedId] = useState("");
+    const [problemList, setProblemList] = useState(null);
+
     const problemListFromStore = useSelector(state => state.problemList.data);
+
+    const difficultyOptions = Array.from(
+        new Set(
+            (problemListFromStore || []).map(item => item.difficulty)
+        )
+    );
+
+    const categoryOptions = Array.from(
+        new Set(
+            (problemListFromStore || []).flatMap(item =>
+                (item.categories || []).map(cat => cat.category)
+            )
+        )
+    );
 
 
     /////////////////////////////////////////////
@@ -23,9 +41,60 @@ export default function ProblemList() {
     /////////////////////////////////////////////
     ///////// When problemListFromStore get updated ///////
     //////////////////////////////////////////////
+
     useEffect(() => {
         setProblemList(problemListFromStore);
     }, [problemListFromStore]);
+
+    useEffect(() => {
+        if (!problemListFromStore || problemListFromStore.length === 0) {
+            setProblemList([]);
+            return;
+        }
+
+        // Always start from ORIGINAL list
+        const freshList = problemListFromStore.map(problem => {
+            const { difficulty, categories } = problem;
+
+            const freshCategory = categoryFilterValue.split(".")[1];
+
+            // Level filter
+            if (level && difficulty !== level) return null;
+
+            const filteredCategories = categories?.map(cat => {
+                const { category, problems } = cat;
+
+                // Category filter
+                if (freshCategory && category.split(".")[1] !== freshCategory) return null;
+
+                const filteredProblems = problems?.filter(p =>
+                    !searchText || p.name.toLowerCase().includes(searchText)
+                );
+
+                if (!filteredProblems || filteredProblems.length === 0) return null;
+
+                return {
+                    ...cat,
+                    problems: filteredProblems
+                };
+            }).filter(Boolean);
+
+            if (!filteredCategories || filteredCategories.length === 0) return null;
+
+            return {
+                ...problem,
+                categories: filteredCategories
+            };
+        }).filter(Boolean);
+
+        setProblemList(freshList);
+
+    }, [problemListFromStore, searchText, level, categoryFilterValue]);
+
+
+    /////////////////////////////////////////////
+    ////// Add Function below only /////////////
+    /////////////////////////////////////////////
 
     const SelectProblem = (problem, category, difficulty) => {
         setSelectedId(problem.id + "-" + category + "-" + difficulty);
@@ -35,7 +104,22 @@ export default function ProblemList() {
         return id + "-" + category + "-" + difficulty;
     }
 
-    console.log(selectedId);
+    /////////////////////////////////////////////
+    ////// Filter Logic can be added here //////
+    /////////////////////////////////////////////
+
+    const searchFilter = (text) => {
+        setSearchText(text.toLowerCase());
+    };
+
+    const levelFilter = (level) => {
+        setLevel(level === "Difficulty" ? "" : level);
+    };
+
+    const categoryFilter = (category) => {
+        setCategoryFilterValue(category === "Category" ? "" : category);
+    };
+
 
     return (
         <PanelCard>
@@ -60,6 +144,7 @@ export default function ProblemList() {
                     <input
                         type="text"
                         placeholder="Search..."
+                        onChange={(e) => searchFilter(e.target.value)}
                         className="w-full
                                     pl-11 pr-4 py-2.5
                                     bg-white
@@ -76,18 +161,28 @@ export default function ProblemList() {
 
                 {/* FILTERS */}
                 <div className="flex gap-2">
-                    <select className="flex-1 bg-gray-100 dark:bg-dark-bg text-xs py-1.5 px-3 rounded-lg">
-                        <option>Difficulty</option>
-                        <option>Easy</option>
-                        <option>Medium</option>
-                        <option>Hard</option>
+                    <select
+                        onChange={(e) => levelFilter(e.target.value)}
+                        className="flex-1 bg-gray-100 dark:bg-dark-bg text-xs py-1.5 px-3 rounded-lg"
+                    >
+                        <option value="">Difficulty</option>
+                        {difficultyOptions.map(level => (
+                            <option key={level} value={level}>
+                                {level}
+                            </option>
+                        ))}
                     </select>
 
-                    <select className="flex-1 bg-gray-100 dark:bg-dark-bg text-xs py-1.5 px-3 rounded-lg">
-                        <option>Category</option>
-                        <option>Array</option>
-                        <option>String</option>
-                        <option>DP</option>
+                    <select
+                        onChange={(e) => categoryFilter(e.target.value)}
+                        className="flex-1 bg-gray-100 dark:bg-dark-bg text-xs py-1.5 px-3 rounded-lg"
+                    >
+                        <option value="">Category</option>
+                        {categoryOptions.map(cat => (
+                            <option key={cat} value={cat}>
+                                {cat.split(".")[1]}
+                            </option>
+                        ))}
                     </select>
 
                     <button

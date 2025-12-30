@@ -1,0 +1,69 @@
+{
+    "Serial": 1,
+    "Level": "Easy",
+    "Category": "Array",
+    "ProblemName": "Two Sum",
+    "ProblemDescription": "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`. You may assume that each input would have exactly one solution, and you may not use the same element twice. Return the answer in any order.",
+    "SampleCode": {
+        "cpp": "// Start typing C++ code here...\n#include <iostream>\n#include <bits.stdc++.h>\n\nusing namespace std;\n\nint main() {\n    cout << \"Hello World!\" << endl;\n    return 0;\n}",
+        "c": "// Start typing C++ code here...\n#include <iostream>\n#include <bits.stdc++.h>\n\nusing namespace std;\n\nint main() {\n    cout << \"Hello World!\" << endl;\n    return 0;\n}",
+        "python": "print('Hello World!')",
+        "java": ""
+    },
+    "SampleInput": [
+        {
+            "input": "2 7 11 15 9"
+        },
+        {
+            "input": "2 7 11 15 9"
+        }
+    ],
+    "SampleOutput": [
+        {
+            "output": "0 1"
+        },
+        {
+            "output": "0 1"
+        }
+    ],
+    "TestCaseInputs": [
+        {
+            "input": "2 7 11 15 9"
+        },
+        {
+            "input": "3 2 4 6"
+        },
+        {
+            "input": "3 3 6"
+        },
+        {
+            "input": "0 4 3 0 0"
+        },
+        {
+            "input": "-1 -2 -3 -4 -5 -8"
+        },
+        {
+            "input": "1 5 3 7 9 8"
+        }
+    ],
+    "TestCaseOutputs": [
+        {
+            "output": "0 1"
+        },
+        {
+            "output": "1 2"
+        },
+        {
+            "output": "0 1"
+        },
+        {
+            "output": "0 3"
+        },
+        {
+            "output": "2 4"
+        },
+        {
+            "output": "0 3"
+        }
+    ]
+}
