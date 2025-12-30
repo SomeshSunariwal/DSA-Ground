@@ -12,7 +12,7 @@ export default function Header({ theme, onToggleTheme }) {
                         L
                     </div>
                     <span className="font-bold text-lg tracking-tight hidden sm:block">
-                        LeetCode<span className="text-orange-500">Clone</span>
+                        DSA<span className="text-orange-500">Ground</span>
                     </span>
                 </div>
 
@@ -22,8 +22,8 @@ export default function Header({ theme, onToggleTheme }) {
                         <button
                             key={item}
                             className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${idx === 1
-                                    ? "bg-white dark:bg-dark-panel shadow text-black dark:text-white"
-                                    : "text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
+                                ? "bg-white dark:bg-dark-panel shadow text-black dark:text-white"
+                                : "text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
                                 }`}
                         >
                             {item}
