@@ -3,31 +3,46 @@ import PanelCard from "../common/PanelCard";
 import MonacoEditor from "./MonacoEditor";
 import ResizableSplit from "../common/ResizableSplit";
 import * as monaco from "monaco-editor";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchCodePrettierStart } from "../../data_store/code_prettier";
 
 
 export default function CodeEditorPanel({ theme }) {
-    const [code, setCode] = useState("// Write your code here...");
-    const [language, setLanguage] = useState("javascript");
+    const dispatch = useDispatch();
+
+    const [code, setCode] = useState(`
+# Write your code here
+#include <iostream>
+using namespace std;
+int main() {
+cout << "Hello, World!" << endl;
+return 0;
+}
+`);
+    const [language, setLanguage] = useState("cpp");
     const [fontSize, setFontSize] = useState(14);
     const [intellisense, setIntellisense] = useState(false);
     const [wordWrap, setWordWrap] = useState(false);
     const [activeTab, setActiveTab] = useState("case");
 
+    const codeResponse = useSelector((state) => state.codePrettier);
+    console.log(codeResponse);
+
+
+
+    ///// Test Cases State /////
     const [testCases, setTestCases] = useState([
         { id: 1, input: "nums = [2,7,11,15], target = 9", output: "[0,1]" }
     ]);
     const [activeCase, setActiveCase] = useState(0);
 
-    const dispatch = useDispatch();
 
     /// Monaco language mapping
     const languageMap = {
-        javascript: "javascript",
+        cpp: "cpp",
         python: "python",
         java: "java",
-        cpp: "cpp",
+        javascript: "javascript",
     };
 
     monaco.languages.register({ id: "cpp" });
@@ -81,10 +96,10 @@ export default function CodeEditorPanel({ theme }) {
                                     dark:bg-[#2d2d2d] dark:text-gray-100 dark:border-gray-600
                                 "
                         >
+                            <option value="cpp">C++</option>
+                            <option value="java">Java</option>
                             <option value="javascript">JavaScript</option>
                             <option value="python">Python</option>
-                            <option value="java">Java</option>
-                            <option value="cpp">C++</option>
                         </select>
 
                         {/* IntelliSense Toggle */}
