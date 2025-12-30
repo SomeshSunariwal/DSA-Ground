@@ -12,11 +12,13 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.1.0",
     "@reduxjs/toolkit": "^2.11.2",
+    "@tailwindcss/typography": "^0.5.19",
     "axios": "^1.13.2",
     "marked": "^17.0.1",
     "monaco-editor": "^0.55.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0",
     "react-redux": "^9.2.0",
     "redux-saga": "^1.4.2"
   },

@@ -2,6 +2,7 @@ import PanelCard from "../common/PanelCard";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProblemListStart } from "../../data_store/problemList_store";
+import { fetchProblemStart } from "../../data_store/problem_store";
 
 export default function ProblemList() {
 
@@ -10,8 +11,8 @@ export default function ProblemList() {
     const [categoryFilterValue, setCategoryFilterValue] = useState("");
     const [selectedId, setSelectedId] = useState("");
     const [problemList, setProblemList] = useState(null);
-
     const problemListFromStore = useSelector(state => state.problemList.data);
+
 
     const difficultyOptions = Array.from(
         new Set(
@@ -26,7 +27,6 @@ export default function ProblemList() {
             )
         )
     );
-
 
     /////////////////////////////////////////////
     ///////// Run at the time of page load ///////
@@ -98,6 +98,11 @@ export default function ProblemList() {
 
     const SelectProblem = (problem, category, difficulty) => {
         setSelectedId(problem.id + "-" + category + "-" + difficulty);
+        dispatch(fetchProblemStart({
+            difficulty: difficulty,
+            category: category,         // full category with prefix e.g. "1.Array"
+            file: problem.file
+        }));
     }
 
     const getKey = (id, category, difficulty) => {
@@ -125,7 +130,9 @@ export default function ProblemList() {
         <PanelCard>
             <div className="p-4 border-b border-light-border dark:border-dark-border space-y-4">
                 <div className="flex justify-between items-center">
-                    <h2 className="font-bold text-lg">Problems</h2>
+                    <h2 className="font-bold text-lg text-gray-900 dark:text-gray-100">
+                        Problems
+                    </h2>
                 </div>
 
                 {/* SEARCH */}
@@ -145,25 +152,45 @@ export default function ProblemList() {
                         type="text"
                         placeholder="Search..."
                         onChange={(e) => searchFilter(e.target.value)}
-                        className="w-full
-                                    pl-11 pr-4 py-2.5
-                                    bg-white
-                                    rounded-lg
-                                    text-sm text-gray-800
-                                    placeholder-gray-400
-                                    border border-blue-500
-                                    focus:outline-none
-                                    focus:ring-2 focus:ring-blue-200
-                                    "
+                        className="
+                                w-full
+                                pl-11 pr-4 py-2.5
+                                rounded-lg
+                                text-sm
+                                bg-white
+                                text-gray-900
+                                placeholder-gray-400
+                                border border-gray-300
+                                focus:outline-none
+                                focus:ring-2 focus:ring-blue-300
+                                dark:bg-gray-900
+                                dark:text-gray-100
+                                dark:placeholder-gray-500
+                                dark:border-gray-700
+                                dark:focus:ring-blue-500
+                            "
                     />
                 </div>
-
 
                 {/* FILTERS */}
                 <div className="flex gap-2">
                     <select
                         onChange={(e) => levelFilter(e.target.value)}
-                        className="flex-1 bg-gray-100 dark:bg-dark-bg text-xs py-1.5 px-3 rounded-lg"
+                        className="
+                                    flex-1
+                                    rounded-lg
+                                    text-xs
+                                    py-2 px-3
+                                    bg-gray-100
+                                    text-gray-900
+                                    border border-gray-300
+                                    focus:outline-none
+                                    focus:ring-2 focus:ring-blue-300
+                                    dark:bg-gray-900
+                                    dark:text-gray-100
+                                    dark:border-gray-700
+                                    dark:focus:ring-blue-500
+                                "
                     >
                         <option value="">Difficulty</option>
                         {difficultyOptions.map(level => (
@@ -175,7 +202,21 @@ export default function ProblemList() {
 
                     <select
                         onChange={(e) => categoryFilter(e.target.value)}
-                        className="flex-1 bg-gray-100 dark:bg-dark-bg text-xs py-1.5 px-3 rounded-lg"
+                        className="
+                                    flex-1
+                                    rounded-lg
+                                    text-xs
+                                    py-2 px-3
+                                    bg-gray-100
+                                    text-gray-900
+                                    border border-gray-300
+                                    focus:outline-none
+                                    focus:ring-2 focus:ring-blue-300
+                                    dark:bg-gray-900
+                                    dark:text-gray-100
+                                    dark:border-gray-700
+                                    dark:focus:ring-blue-500
+                                "
                     >
                         <option value="">Category</option>
                         {categoryOptions.map(cat => (
@@ -186,14 +227,16 @@ export default function ProblemList() {
                     </select>
 
                     <button
-                        className="w-10 h-10
-                                    rounded-lg
-                                    bg-blue-600 hover:bg-blue-700
-                                    text-white
-                                    flex items-center justify-center
-                                    shadow-md
-                                    transition-all
-                                    active:scale-95"
+                        className="
+                                w-10 h-10
+                                rounded-lg
+                                bg-blue-600 hover:bg-blue-700
+                                text-white
+                                flex items-center justify-center
+                                shadow-md
+                                transition-all
+                                active:scale-95
+                            "
                     >
                         <i className="fas fa-plus text-sm"></i>
                     </button>
