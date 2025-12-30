@@ -4,6 +4,7 @@ import problemReducer from "./problem_store";
 import problemListReducer from "./problemList_store";
 import runCodeStore from "./run_code_store";
 import codePrettierStore from "./code_prettier";
+import runAllTestCasesStore from "./run_all_testcase_store";
 
 import rootSaga from "./rootSaga";
 
@@ -14,6 +15,7 @@ export const store = configureStore({
         problem: problemReducer,
         problemList: problemListReducer,
         runCode: runCodeStore,
+        runAllTestCases: runAllTestCasesStore,
         codePrettier: codePrettierStore
     },
     middleware: (getDefault) => getDefault().concat(sagaMiddleware),

@@ -5,6 +5,7 @@ import ResizableSplit from "../common/ResizableSplit";
 import * as monaco from "monaco-editor";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCodePrettierStart } from "../../data_store/code_prettier";
+import { runAllTestCasesStart } from "../../data_store/run_all_testcase_store";
 
 
 export default function CodeEditorPanel({ theme }) {
@@ -14,9 +15,13 @@ export default function CodeEditorPanel({ theme }) {
 #include <iostream>
 using namespace std;
 int main() {
-cout << "Hello, World!" << endl;
-return 0;
+    int a;
+    int b, c;
+    cin >> a >> b >> c;
+    cout << a+b+c << endl;
+    return 0; 
 }
+
 `);
     const [language, setLanguage] = useState("cpp");
     const [fontSize, setFontSize] = useState(14);
@@ -42,7 +47,8 @@ return 0;
 
     ///// Test Cases State /////
     const [testCases, setTestCases] = useState([
-        { id: 1, input: "nums = [2,7,11,15], target = 9", output: "[0,1]" }
+        { id: 1, input: "1 2 3", output: "" },
+        { id: 2, input: "1 2 4", output: "" }
     ]);
     const [activeCase, setActiveCase] = useState(0);
 
@@ -97,6 +103,38 @@ return 0;
         });
     };
 
+    // RunCode handler ()
+    const runCode = async () => {
+        dispatch(runAllTestCasesStart({
+            testCases: testCases,
+            language: language,
+            code: code,
+            mode: "local",
+        }));
+    }
+
+    const { running, outputs } = useSelector(
+        (state) => state.runAllTestCases
+    );
+
+    console.log("Running " + running);
+    console.log("output " + outputs);
+
+
+    // const outputs = useSelector(
+    //     (state) => state.runAllTestCases.outputs
+    // );
+
+    useEffect(() => {
+        if (!outputs.length) return;
+
+        setTestCases((prev) =>
+            prev.map((tc, i) => ({
+                ...tc,
+                output: outputs[i] || "",
+            }))
+        );
+    }, [outputs]);
 
     return (
         <ResizableSplit direction="vertical" initialSizes={[70, 30]}>
@@ -357,6 +395,7 @@ return 0;
                                 </div>
                                 <textarea
                                     value={testCases[activeCase].output}
+                                    disabled
                                     onChange={(e) => updateCase("output", e.target.value)}
                                     className="w-full h-20
                                                 px-3 py-2
@@ -378,24 +417,40 @@ return 0;
 
                 {/* ACTIONS */}
                 <div className="shrink-0 h-14 px-4 border-t flex items-center justify-between bg-gray-50 dark:bg-[#1e1e1e]">
-                    <button className="
-                            px-5 py-2
-                            rounded-lg
-                            text-sm font-semibold
-                            bg-gray-200 dark:bg-gray-700
-                            text-gray-700 dark:text-gray-200
-                            ">
+                    <button
+                        onClick={runCode}
+                        disabled={running}
+                        className={`
+                                px-5 py-2
+                                rounded-lg
+                                text-sm font-semibold
+                                flex items-center gap-2
+                                ${running
+                                ? "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"
+                                : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                            }
+        `}
+                    >
+                        {running && (
+                            <span className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
+                        )}
                         Run Code
                     </button>
 
-                    <button className="
-                            px-8 py-2
-                            rounded-lg
-                            text-sm font-semibold
-                            bg-green-600 hover:bg-green-700
-                            text-white
-                            flex items-center gap-2
-                            ">
+                    <button
+                        disabled={running}
+                        className={`
+                                    px-8 py-2
+                                    rounded-lg
+                                    text-sm font-semibold
+                                    flex items-center gap-2
+                                    ${running
+                                ? "bg-green-400 cursor-not-allowed"
+                                : "bg-green-600 hover:bg-green-700"
+                            }
+                                    text-white
+                                `}
+                    >
                         Submit
                         <i className="fas fa-paper-plane text-xs"></i>
                     </button>

@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const fetchRunCodeSlice = createSlice({
-    name: "runCode",
+    name: "run_all_testcase",
 
     initialState: {
         loading: false,
