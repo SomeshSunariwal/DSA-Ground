@@ -200,10 +200,6 @@ int main() {
         setActiveTab("console");
 
         const submissionCases = [
-            ...testCases.map(tc => ({
-                input: tc.input,
-                expectedOutput: tc.expectedOutput,
-            })),
             ...problem.TestCaseInputs.map((item, idx) => ({
                 input: item.input,
                 expectedOutput: problem.TestCaseOutputs[idx]?.output || "",
@@ -222,6 +218,55 @@ int main() {
             mode: "local",
         }));
     };
+
+    useEffect(() => {
+        if (executionMode !== "submit") return;
+        if (!outputs.length || !problem?.TestCaseOutputs?.length) return;
+
+        setConsoleLogs(() => {
+            const logs = [
+                { type: "info", text: "Code Submitted." },
+                { type: "info", text: "Executing test cases..." },
+            ];
+
+            outputs.forEach((out, idx) => {
+                if (!out) return;
+
+                const expected =
+                    problem.TestCaseOutputs[idx]?.output?.trim() || "";
+
+                const actual = out.trim();
+
+                console.log(actual + " / " + expected);
+
+                const success = actual === expected;
+
+                logs.push({
+                    type: success ? "success" : "error",
+                    text: `Running ${idx + 1}: ${success ? "Success ✔" : "Failed ✖"}`,
+                });
+            });
+
+            // final status
+            if (outputs.length === problem.TestCaseOutputs.length) {
+                const hasFailure = outputs.some((out, i) => {
+                    const expected =
+                        problem.TestCaseOutputs[i]?.output?.trim() || "";
+                    return out.trim() !== expected;
+                });
+
+                logs.push({
+                    type: hasFailure ? "error" : "success",
+                    text: hasFailure
+                        ? "Status: Failed ❌"
+                        : "Successfully ran all test cases ✔",
+                });
+            }
+
+            return logs;
+        });
+    }, [outputs, executionMode, problem]);
+
 
     /////////////////////////////////////
     // Color of the test case button
