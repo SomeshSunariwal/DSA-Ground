@@ -20,7 +20,6 @@ int main() {
     cout << a+b+c << endl;
     return 0; 
 }
-
 `);
     const [language, setLanguage] = useState("cpp");
     const [fontSize, setFontSize] = useState(14);
@@ -28,9 +27,15 @@ int main() {
     const [wordWrap, setWordWrap] = useState(false);
     const [activeTab, setActiveTab] = useState("case");
     const [prettifyRequested, setPrettifyRequested] = useState(false);
+    const [consoleLogs, setConsoleLogs] = useState([]);
+    const [executionMode, setExecutionMode] = useState("run");
+    // "run" | "submit"
+
+
 
 
     const codeResponse = useSelector((state) => state.codePrettier.data);
+    const problem = useSelector((state) => state.problem.data);
     const { running, outputs } = useSelector(
         (state) => state.runAllTestCases
     );
@@ -48,14 +53,6 @@ int main() {
     }, [codeResponse, prettifyRequested]);
 
 
-    ///// Test Cases State /////
-    const [testCases, setTestCases] = useState([
-        { id: 1, input: "1 2 3", output: "" },
-        { id: 2, input: "1 2 4", output: "" }
-    ]);
-    const [activeCase, setActiveCase] = useState(0);
-
-
     /// Monaco language mapping
     const languageMap = {
         cpp: "cpp",
@@ -65,7 +62,7 @@ int main() {
     };
 
     ////////////////////////////////////
-    /////////// HANDLERS ///////////
+    /////////// Code Prettier ///////////
     const makeCodePrettier = () => {
         // For simplicity, we'll just format JS code using Monaco's built-in formatter
         setPrettifyRequested(true);
@@ -74,9 +71,60 @@ int main() {
         }))
     }
 
+    /////////////////////////////////////
+    // Test Case Logic
+    /////////////////////////////////////
+
+    const [testCases, setTestCases] = useState([
+        {
+            id: 1,
+            input: "0",
+            expectedOutput: "0",
+            actualOutput: "",
+            success: "0",
+            editable: false,
+        },
+    ]);
+
+    useEffect(() => {
+        if (!problem || !problem.SampleInput || !problem.SampleOutput) return;
+
+        const generatedTestCases = problem.SampleInput.map((item, index) => ({
+            id: index + 1,
+            input: item.input || "",
+            expectedOutput: problem.SampleOutput[index]?.output || "",
+            actualOutput: "",
+            success: "0",
+            editable: false,
+            isSample: true,
+        }));
+
+        if (!problem.SampleCode) return;
+
+        setCode(problem.SampleCode[language] || code);
+        setTestCases(generatedTestCases);
+        setActiveCase(0);
+    }, [problem]);
+
+    useEffect(() => {
+        if (!problem || !problem.SampleCode) return;
+        setCode(problem.SampleCode[language] || code);
+    }, [problem, language]);
+
+
+    const [activeCase, setActiveCase] = useState(0);
 
     const addTestCase = () => {
-        setTestCases([...testCases, { id: Date.now(), input: "", output: "" }]);
+        setTestCases([...testCases,
+        {
+            id: Date.now(),
+            input: "",
+            actualOutput: "",
+            expectedOutput: "0",
+            success: "0",
+            editable: true,
+            isSample: true,
+        }]);
         setActiveCase(testCases.length);
     };
 
@@ -103,26 +151,100 @@ int main() {
         });
     };
 
-    // RunCode handler ()
-    const runCode = async () => {
+
+    /////////////////////////////////////
+    // RunCode logic
+    /////////////////////////////////////
+    const runCode = () => {
+        setExecutionMode("run");
+
+        const visibleCases = testCases;
+
         dispatch(runAllTestCasesStart({
-            testCases: testCases,
-            language: language,
-            code: code,
+            testCases: visibleCases,
+            language,
+            code,
             mode: "local",
         }));
-    }
+    };
 
     useEffect(() => {
+        if (executionMode !== "run") return;
         if (!outputs.length) return;
 
-        setTestCases((prev) =>
-            prev.map((tc, i) => ({
-                ...tc,
-                output: outputs[i] || "",
-            }))
+        setTestCases(prev =>
+            prev.map((tc, idx) => {
+                const actual = (outputs[idx] || "").trim();
+                const expected = (tc.expectedOutput || "").trim();
+
+                let success = "0";
+                if (actual && expected) {
+                    success = actual === expected ? "1" : "2";
+                }
+
+                return {
+                    ...tc,
+                    actualOutput: actual,
+                    success,
+                };
+            })
         );
-    }, [outputs]);
+    }, [outputs, executionMode]);
+
+
+    /////////////////////////////////////
+    // Submit Code logic
+    /////////////////////////////////////
+    const submitCode = () => {
+        setExecutionMode("submit");
+        setActiveTab("console");
+
+        const submissionCases = [
+            ...testCases.map(tc => ({
+                input: tc.input,
+                expectedOutput: tc.expectedOutput,
+            })),
+            ...problem.TestCaseInputs.map((item, idx) => ({
+                input: item.input,
+                expectedOutput: problem.TestCaseOutputs[idx]?.output || "",
+            }))
+        ];
+
+        setConsoleLogs([
+            { type: "info", text: "Code Submitted." },
+            { type: "info", text: "Executing test cases..." },
+        ]);
+
+        dispatch(runAllTestCasesStart({
+            testCases: submissionCases,
+            language,
+            code,
+            mode: "local",
+        }));
+    };
+
+    /////////////////////////////////////
+    // Color of the test case button
+    /////////////////////////////////////
+    const getCaseColor = (tc, isActive) => {
+        if (isActive) {
+            // Active case always stronger color
+            if (tc.success === "1") return "bg-green-500 text-white";
+            if (tc.success === "2") return "bg-red-500 text-white";
+            return "bg-blue-500 text-white"; // default
+        }
+
+        // Inactive cases
+        if (tc.success === "1")
+            return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200";
+
+        if (tc.success === "2")
+            return "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200";
+
+        // success === "0"
+        return "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200";
+    };
+
 
     return (
         <ResizableSplit direction="vertical" initialSizes={[70, 30]}>
@@ -315,28 +437,25 @@ int main() {
                                         <button
                                             onClick={() => setActiveCase(idx)}
                                             className={`px-4 py-1.5 pr-6 rounded-lg text-xs font-semibold transition
-                    ${activeCase === idx
-                                                    ? "bg-blue-500 text-white"
-                                                    : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
-                                                }`}
+                                                            ${getCaseColor(tc, activeCase === idx)}`}
                                         >
                                             Case {idx + 1}
                                         </button>
 
                                         {/* ❌ Delete */}
-                                        {testCases.length > 1 && (
+                                        {testCases.length > 1 && tc.editable && (
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation(); // ⛔ prevent case switch
                                                     deleteTestCase(idx);
                                                 }}
                                                 className="absolute -top-1 -right-1
-                               w-4 h-4
-                               rounded-full
-                               bg-gray-400 hover:bg-red-500
-                               text-white text-[10px]
-                               flex items-center justify-center
-                               transition"
+                                                            w-4 h-4
+                                                            rounded-full
+                                                            bg-gray-400 hover:bg-red-500
+                                                            text-white text-[10px]
+                                                            flex items-center justify-center
+                                                            transition"
                                                 title="Delete case"
                                             >
                                                 ✕
@@ -349,9 +468,9 @@ int main() {
                                 <button
                                     onClick={addTestCase}
                                     className="w-8 h-8 flex items-center justify-center
-                   rounded-lg border border-dashed
-                   text-gray-500 hover:text-blue-600
-                   hover:border-blue-400"
+                                                rounded-lg border border-dashed
+                                                text-gray-500 hover:text-blue-600
+                                                hover:border-blue-400"
                                 >
                                     +
                                 </button>
@@ -365,41 +484,79 @@ int main() {
                                 <textarea
                                     value={testCases[activeCase].input}
                                     onChange={(e) => updateCase("input", e.target.value)}
-                                    className="
-                                                w-full h-24
+                                    className="w-full h-24
                                                 px-3 py-2
                                                 font-mono text-sm
                                                 rounded-lg
                                                 bg-white dark:bg-dark-bg
+                                                text-gray-700 dark:text-gray-300
                                                 border border-gray-200 dark:border-gray-700
-                                                focus:outline-none focus:border-blue-500"
-                                />
+                                                focus:outline-none focus:border-blue-500"/>
                             </div>
 
-                            {/* OUTPUT */}
-                            <div>
-                                <div className="text-[10px] font-bold tracking-widest text-gray-400 mb-1">
-                                    EXPECTED OUTPUT
+                            {/* OUTPUTS */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                                {/* ACTUAL OUTPUT */}
+                                <div>
+                                    <div className="text-[10px] font-bold tracking-widest text-gray-400 mb-1">
+                                        ACTUAL OUTPUT
+                                    </div>
+                                    <textarea
+                                        value={testCases[activeCase].actualOutput}
+                                        disabled
+                                        className="
+                                        w-full h-auto
+                                        px-3 py-2
+                                        font-mono text-sm
+                                        rounded-lg
+                                        bg-gray-50 dark:bg-[#1e1e1e]
+                                        border border-gray-200 dark:border-gray-700
+                                        text-gray-700 dark:text-gray-300
+                                        focus:outline-none"
+                                    />
                                 </div>
-                                <textarea
-                                    value={testCases[activeCase].output}
-                                    disabled
-                                    onChange={(e) => updateCase("output", e.target.value)}
-                                    className="w-full h-20
-                                                px-3 py-2
-                                                font-mono text-sm
-                                                rounded-lg
-                                                bg-white dark:bg-dark-bg
-                                                border border-gray-200 dark:border-gray-700
-                                                focus:outline-none focus:border-blue-500
-                                                "
-                                />
+
+                                {/* EXPECTED OUTPUT */}
+                                <div>
+                                    <div className="text-[10px] font-bold tracking-widest text-gray-400 mb-1">
+                                        EXPECTED OUTPUT
+                                    </div>
+                                    <textarea
+                                        value={testCases[activeCase].expectedOutput || ""}
+                                        disabled={!testCases[activeCase].editable}
+                                        onChange={(e) => updateCase("expectedOutput", e.target.value)}
+                                        className="w-full
+                                                    px-3 py-2
+                                                    font-mono text-sm
+                                                    rounded-lg
+                                                    bg-gray dark:bg-[#1e1e1e]
+                                                    border border-gray-200 dark:border-gray-700
+                                                    text-gray-700 dark:text-gray-300
+                                                    focus:outline-none focus:border-blue-500"
+                                    />
+                                </div>
                             </div>
                         </>
                     ) : (
-                        <div className="font-mono text-sm text-gray-500">
-                            Console ready...
-                        </div>
+                        (
+                            <div className="font-mono text-sm space-y-2">
+                                {consoleLogs.map((log, idx) => (
+                                    <div
+                                        key={idx}
+                                        className={
+                                            log.type === "success"
+                                                ? "text-green-500"
+                                                : log.type === "error"
+                                                    ? "text-red-500"
+                                                    : "text-gray-400"
+                                        }
+                                    >
+                                        {log.text}
+                                    </div>
+                                ))}
+                            </div>
+                        )
                     )}
                 </div>
 
@@ -409,15 +566,15 @@ int main() {
                         onClick={runCode}
                         disabled={running}
                         className={`
-                                px-5 py-2
-                                rounded-lg
-                                text-sm font-semibold
-                                flex items-center gap-2
-                                ${running
+                            px-5 py-2
+                            rounded-lg
+                            text-sm font-semibold
+                            flex items-center gap-2
+                            ${running
                                 ? "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"
                                 : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
                             }
-        `}
+                            `}
                     >
                         {running && (
                             <span className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
@@ -427,6 +584,7 @@ int main() {
 
                     <button
                         disabled={running}
+                        onClick={submitCode}
                         className={`
                                     px-8 py-2
                                     rounded-lg
