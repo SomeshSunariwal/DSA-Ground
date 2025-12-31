@@ -179,8 +179,7 @@ export default function ProblemList() {
                         className="
                                     flex-1
                                     rounded-lg
-                                    text-xs
-                                    py-2 px-3
+                                    text-xs px-3
                                     bg-gray-100
                                     text-gray-900
                                     border border-gray-300
@@ -205,8 +204,7 @@ export default function ProblemList() {
                         className="
                                     flex-1
                                     rounded-lg
-                                    text-xs
-                                    py-2 px-3
+                                    text-xs px-3
                                     bg-gray-100
                                     text-gray-900
                                     border border-gray-300

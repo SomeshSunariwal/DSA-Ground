@@ -11,7 +11,8 @@ export default function Header({ theme, onToggleTheme }) {
                     <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center text-white font-bold text-lg">
                         L
                     </div>
-                    <span className="font-bold text-lg tracking-tight hidden sm:block">
+                    <span className="font-bold text-lg tracking-tight hidden sm:block 
+                                    text-gray-900 dark:text-gray-100">
                         DSA<span className="text-orange-500">Ground</span>
                     </span>
                 </div>

@@ -237,8 +237,6 @@ int main() {
 
                 const actual = out.trim();
 
-                console.log(actual + " / " + expected);
-
                 const success = actual === expected;
 
                 logs.push({
@@ -530,6 +528,7 @@ int main() {
                                     value={testCases[activeCase].input}
                                     onChange={(e) => updateCase("input", e.target.value)}
                                     className="w-full h-24
+                                                resize-none
                                                 px-3 py-2
                                                 font-mono text-sm
                                                 rounded-lg
@@ -540,9 +539,10 @@ int main() {
                             </div>
 
                             {/* OUTPUTS */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* OUTPUTS */}
+                            <div className="grid grid-cols-[3fr_2fr] gap-4">
 
-                                {/* ACTUAL OUTPUT */}
+                                {/* ACTUAL OUTPUT – 60% */}
                                 <div>
                                     <div className="text-[10px] font-bold tracking-widest text-gray-400 mb-1">
                                         ACTUAL OUTPUT
@@ -550,19 +550,18 @@ int main() {
                                     <textarea
                                         value={testCases[activeCase].actualOutput}
                                         disabled
-                                        className="
-                                        w-full h-auto
-                                        px-3 py-2
-                                        font-mono text-sm
-                                        rounded-lg
-                                        bg-gray-50 dark:bg-[#1e1e1e]
-                                        border border-gray-200 dark:border-gray-700
-                                        text-gray-700 dark:text-gray-300
-                                        focus:outline-none"
+                                        className="w-full h-20
+                                                    px-3 py-2
+                                                    font-mono text-sm
+                                                    rounded-lg
+                                                    bg-gray-50 dark:bg-[#1e1e1e]
+                                                    border border-gray-200 dark:border-gray-700
+                                                    text-gray-700 dark:text-gray-300
+                                                    focus:outline-none"
                                     />
                                 </div>
 
-                                {/* EXPECTED OUTPUT */}
+                                {/* EXPECTED OUTPUT – 40% */}
                                 <div>
                                     <div className="text-[10px] font-bold tracking-widest text-gray-400 mb-1">
                                         EXPECTED OUTPUT
@@ -571,7 +570,7 @@ int main() {
                                         value={testCases[activeCase].expectedOutput || ""}
                                         disabled={!testCases[activeCase].editable}
                                         onChange={(e) => updateCase("expectedOutput", e.target.value)}
-                                        className="w-full
+                                        className="w-full h-20
                                                     px-3 py-2
                                                     font-mono text-sm
                                                     rounded-lg
