@@ -231,14 +231,7 @@ export default function ProblemList({ theme }) {
 
                     <button
                         onClick={() => setIsAddModalOpen(true)}
-                        className="w-10 h-10
-                                    rounded-lg
-                                    bg-blue-600 hover:bg-blue-700
-                                    text-white
-                                    flex items-center justify-center
-                                    shadow-md
-                                    transition-all
-                                    active:scale-95">
+                        className="w-10 min-w-[2.5rem] h-10 rounded-lg bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-md transition-all active:scale-95">
                         <i className="fas fa-plus text-sm"></i>
                     </button>
                 </div>
@@ -308,7 +301,7 @@ export default function ProblemList({ theme }) {
                 isOpen={isAddModalOpen}
                 theme={theme}
                 onClose={() => setIsAddModalOpen(false)}
-                levels={difficultyOptions.length ? difficultyOptions : ["Easy", "Medium", "Hard"]}
+                levels={difficultyOptions.length ? difficultyOptions : ["Easy"]}
                 categories={categoryOptions.length ? categoryOptions : ["Array"]}
             />
         </PanelCard >

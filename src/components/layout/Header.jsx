@@ -9,7 +9,7 @@ export default function Header({ theme, onToggleTheme }) {
                 {/* Logo */}
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                        L
+                        D
                     </div>
                     <span className="font-bold text-lg tracking-tight hidden sm:block 
                                     text-gray-900 dark:text-gray-100">
