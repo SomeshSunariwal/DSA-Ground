@@ -29,7 +29,7 @@ export default function App() {
       {/* ✅ CONTENT */}
       <div className="flex-1 overflow-hidden">
         <ResizableSplit initialSizes={[15, 40, 45]}>
-          <ProblemList />
+          <ProblemList theme={theme} />
           <Description />
           <CodeEditorPanel theme={theme} />
         </ResizableSplit>

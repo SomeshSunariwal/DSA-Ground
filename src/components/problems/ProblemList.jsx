@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProblemListStart } from "../../data_store/problemList_store";
 import { fetchProblemStart } from "../../data_store/problem_store";
+import AddProblemModal from "../common/AddProblemModal";
 
-export default function ProblemList() {
+
+export default function ProblemList({ theme }) {
 
     const [searchText, setSearchText] = useState("");
     const [level, setLevel] = useState("");
@@ -12,6 +14,8 @@ export default function ProblemList() {
     const [selectedId, setSelectedId] = useState("");
     const [problemList, setProblemList] = useState(null);
     const problemListFromStore = useSelector(state => state.problemList.data);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
 
 
     const difficultyOptions = Array.from(
@@ -127,6 +131,7 @@ export default function ProblemList() {
 
 
     return (
+
         <PanelCard>
             <div className="p-4 border-b border-light-border dark:border-dark-border space-y-4">
                 <div className="flex justify-between items-center">
@@ -225,17 +230,15 @@ export default function ProblemList() {
                     </select>
 
                     <button
-                        className="
-                                w-10 h-10
-                                rounded-lg
-                                bg-blue-600 hover:bg-blue-700
-                                text-white
-                                flex items-center justify-center
-                                shadow-md
-                                transition-all
-                                active:scale-95
-                            "
-                    >
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="w-10 h-10
+                                    rounded-lg
+                                    bg-blue-600 hover:bg-blue-700
+                                    text-white
+                                    flex items-center justify-center
+                                    shadow-md
+                                    transition-all
+                                    active:scale-95">
                         <i className="fas fa-plus text-sm"></i>
                     </button>
                 </div>
@@ -301,6 +304,13 @@ export default function ProblemList() {
                     }) : <div>Loading 2...</div>;
                 }) : <div>Loading 3...</div>}
             </div>
+            <AddProblemModal
+                isOpen={isAddModalOpen}
+                theme={theme}
+                onClose={() => setIsAddModalOpen(false)}
+                levels={difficultyOptions.length ? difficultyOptions : ["Easy", "Medium", "Hard"]}
+                categories={categoryOptions.length ? categoryOptions : ["Array"]}
+            />
         </PanelCard >
     );
 }
