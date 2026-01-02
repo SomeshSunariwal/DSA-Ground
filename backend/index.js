@@ -34,14 +34,14 @@ const PRETTIER_PARSER_MAP = {
 };
 
 // SIMPLE TEST
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
     res.send("Backend is running...");
 });
 
 // ----------------------
 // LOCAL EXECUTION
 // ----------------------
-app.post("/run/local", async (req, res) => {
+app.post("/api/run/local", async (req, res) => {
     logRequest(req);
     const { language, code, stdin } = req.body;
 
@@ -56,7 +56,7 @@ app.post("/run/local", async (req, res) => {
 // ----------------------
 // DOCKER EXECUTION
 // ----------------------
-app.post("/run/docker", async (req, res) => {
+app.post("/api/run/docker", async (req, res) => {
     logRequest(req);
     const { language, code, stdin } = req.body;
 
@@ -68,7 +68,7 @@ app.post("/run/docker", async (req, res) => {
     }
 });
 
-app.get("/problems-meta", (req, res) => {
+app.get("/api/problems-meta", (req, res) => {
     logRequest(req);
     const basePath = path.join(__dirname, "data");
 
@@ -114,7 +114,7 @@ app.get("/problems-meta", (req, res) => {
 // ------------------------------------------------------------------
 // API 2: RETURN ACTUAL FULL PROBLEM JSON
 // ------------------------------------------------------------------
-app.get("/problem", (req, res) => {
+app.get("/api/problem", (req, res) => {
     logRequest(req);
     const { difficulty, category, file } = req.query;
 
@@ -141,7 +141,7 @@ app.get("/problem", (req, res) => {
     }
 });
 
-app.post("/prettify-code", async (req, res) => {
+app.post("/api/prettify-code", async (req, res) => {
     logRequest(req);
 
     const { language, code } = req.body;

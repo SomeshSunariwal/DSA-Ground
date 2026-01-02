@@ -11,8 +11,7 @@ function* fetchCodePrettierSaga(action) {
     const { language, code } = action.payload;
 
     try {
-        const endpoint = CONSTANTS.BASE_URLS + CONSTANTS.SLASH + CONSTANTS.CodePrettier;
-        console.log("Hitted Endpoint -> " + endpoint);
+        const endpoint = CONSTANTS.BASE_URLS + CONSTANTS.API + CONSTANTS.SLASH + CONSTANTS.CodePrettier;
 
         const response = yield call(() =>
             axios.post(endpoint, {

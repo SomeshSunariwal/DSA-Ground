@@ -10,8 +10,7 @@ import {
 
 function* fetchProblemListSaga() {
     try {
-        const endpoint = CONSTANTS.BASE_URLS + CONSTANTS.SLASH + CONSTANTS.PROBLEM_META_DATA;
-        console.log("Hitted Endpoint : -> " + endpoint);
+        const endpoint = CONSTANTS.BASE_URLS + CONSTANTS.API + CONSTANTS.SLASH + CONSTANTS.PROBLEM_META_DATA;
 
         const response = yield call(() =>
             axios.get(endpoint)

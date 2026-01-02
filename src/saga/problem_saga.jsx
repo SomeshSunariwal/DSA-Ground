@@ -11,8 +11,7 @@ function* fetchProblemSaga(action) {
     const { difficulty, category, file } = action.payload;
 
     try {
-        const endpoint = CONSTANTS.BASE_URLS + CONSTANTS.SLASH + CONSTANTS.PROBLEM;
-        console.log("Hitted Endpoint -> " + endpoint);
+        const endpoint = CONSTANTS.BASE_URLS + CONSTANTS.API + CONSTANTS.SLASH + CONSTANTS.PROBLEM;
 
         const response = yield call(() =>
             axios.get(endpoint, {
