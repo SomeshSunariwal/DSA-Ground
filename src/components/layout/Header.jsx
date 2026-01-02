@@ -45,7 +45,7 @@ export default function Header({ theme, onToggleTheme }) {
 
                 {/* Avatar */}
                 <div className="w-9 h-9 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white flex items-center justify-center text-sm font-bold">
-                    JD
+                    SS
                 </div>
             </div>
         </header>

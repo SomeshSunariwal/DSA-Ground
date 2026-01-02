@@ -111,7 +111,7 @@ export async function runLocal(language, code, stdin = '') {
             fs.writeFileSync(srcPath, code);
 
             // --- Syntax Check ---
-            const syntaxCheck = await execPromise(`python -m py_compile "${srcPath}"`);
+            const syntaxCheck = await execPromise(`python3 -m py_compile "${srcPath}"`);
             if (syntaxCheck.stderr && syntaxCheck.stderr.length > 0) {
                 return {
                     success: false,
@@ -119,13 +119,14 @@ export async function runLocal(language, code, stdin = '') {
                 };
             }
 
-            runCmd = `python "${srcPath}"`;
+            runCmd = `python3 "${srcPath}"`;
         }
 
         else if (language === 'java') {
-            srcPath = tmpFileName('Main', 'java');
+            const srcDir = os.tmpdir();
+            srcPath = path.join(srcDir, 'Main.java');
+
             fs.writeFileSync(srcPath, code);
-            const srcDir = path.dirname(srcPath);
 
             compileCmd = `javac "${srcPath}" -d "${srcDir}"`;
             const cRes = await execPromise(compileCmd, { timeout: 10000 });

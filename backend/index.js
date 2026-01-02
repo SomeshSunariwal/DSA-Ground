@@ -176,9 +176,9 @@ app.post("/api/prettify-code", async (req, res) => {
 
         // ---------------- JAVA ----------------
         else if (language === "java") {
-            filePath = path.join(tempDir, `${tempId}.java`);
+            filePath = path.join(tempDir, "Main.java");
             fs.writeFileSync(filePath, code);
-            formatCmd = `google-java-format ${filePath}`;
+            formatCmd = `java -jar /usr/local/bin/google-java-format.jar --replace ${filePath}`;
         }
 
         // ---------------- C++ ----------------

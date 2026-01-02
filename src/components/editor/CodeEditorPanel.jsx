@@ -42,16 +42,16 @@ int main() {
 
 
     useEffect(() => {
-        if (
-            prettifyRequested &&
-            codeResponse &&
-            codeResponse.formattedCode
-        ) {
-            setCode(codeResponse.formattedCode);
-            setPrettifyRequested(false); // reset after update
-        }
-    }, [codeResponse, prettifyRequested]);
+        if (!prettifyRequested) return;
+        if (!codeResponse?.formattedCode) return;
 
+        setCode(codeResponse.formattedCode);
+        setPrettifyRequested(false);
+    }, [codeResponse]);
+
+    useEffect(() => {
+        setPrettifyRequested(false);
+    }, [language]);
 
     /// Monaco language mapping
     const languageMap = {
