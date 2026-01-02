@@ -34,10 +34,10 @@ export default function AddProblemModal({
             java: "// Write your Java code here\nimport java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // your code here\n    }\n}",
             javascript: "// Write your JavaScript code here\n\nfunction main() {\n    // your code here\n}\n\nmain();"
         },
-        SampleInput: [{ input: "0" }],
-        SampleOutput: [{ output: "0" }],
-        TestCaseInputs: [{ input: "0" }],
-        TestCaseOutputs: [{ output: "0" }]
+        SampleInput: [],
+        SampleOutput: [],
+        TestCaseInputs: [],
+        TestCaseOutputs: []
     });
 
 
@@ -123,7 +123,8 @@ export default function AddProblemModal({
                 <div className="flex-1 p-6 grid grid-cols-2 gap-6 overflow-hidden text-gray-900 dark:text-gray-100">
 
                     {/* ================= LEFT ================= */}
-                    <div className="space-y-4 overflow-y-auto pr-2">
+
+                    <div className="space-y-4 overflow-y-auto pr-2 ml-0.5">
 
                         <div className="flex justify-between items-center">
                             <h2 className="text-lg font-bold">Add New Problem</h2>
@@ -131,7 +132,7 @@ export default function AddProblemModal({
                         </div>
 
                         <div className="flex gap-3">
-                            <select value={form.Level} onChange={e => setForm(p => ({ ...p, Level: e.target.value }))} className="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+                            <select value={form.Level} onChange={e => setForm(p => ({ ...p, Level: e.target.value }))} className="w-full px-4 py-2 ml-0.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
                                 {levels.map(l => <option key={l}>{l}</option>)}
                             </select>
 
@@ -140,7 +141,8 @@ export default function AddProblemModal({
                             </select>
                         </div>
 
-                        <input value={form.ProblemName} onChange={e => setForm(p => ({ ...p, ProblemName: e.target.value }))} placeholder="Problem Name" className="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600" />
+                        <input value={form.ProblemName} onChange={e => setForm(p => ({ ...p, ProblemName: e.target.value }))} placeholder="Problem Name"
+                            className="w-full px-2 py-2 ml-0.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600" />
 
                         <div>
                             <div className="flex gap-2 mb-2">
@@ -149,7 +151,9 @@ export default function AddProblemModal({
                             </div>
 
                             {!previewMode ? (
-                                <textarea value={form.ProblemDescription} onChange={e => setForm(p => ({ ...p, ProblemDescription: e.target.value }))} className="w-full min-h-[200px] p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600" />
+                                <textarea value={form.ProblemDescription} onChange={e => setForm(p => ({ ...p, ProblemDescription: e.target.value }))}
+                                    placeholder={`${"Problem Description (Markdown Supported)"}`}
+                                    className="w-full min-h-[200px] ml-0.5 p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600" />
                             ) : (
                                 <div className="min-h-[200px] p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                                     <ReactMarkdown>{form.ProblemDescription || "Nothing to preview..."}</ReactMarkdown>
@@ -197,7 +201,7 @@ export default function AddProblemModal({
                         <div>
                             <h3 className="font-semibold mb-2">Sample Testcases</h3>
                             {form.SampleInput.map((_, i) => (
-                                <div key={i} className="flex gap-2 mb-2">
+                                <div key={i} className="flex gap-2 mb-2 ml-0.5">
                                     <textarea value={form.SampleInput[i].input} onChange={e => updateArray("SampleInput", i, "input", e.target.value)} className="w-1/2 p-2 text-xs rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600" />
                                     <textarea value={form.SampleOutput[i].output} onChange={e => updateArray("SampleOutput", i, "output", e.target.value)} className="w-1/2 p-2 text-xs rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600" />
                                     <button onClick={() => removeRow("SampleInput", "SampleOutput", i)} className="text-red-500 px-2">✕</button>
@@ -211,7 +215,7 @@ export default function AddProblemModal({
                         <div>
                             <h3 className="font-semibold mb-2">Testcases</h3>
                             {form.TestCaseInputs.map((_, i) => (
-                                <div key={i} className="flex gap-2 mb-2">
+                                <div key={i} className="flex gap-2 mb-2 ml-0.5">
                                     <textarea value={form.TestCaseInputs[i].input} onChange={e => updateArray("TestCaseInputs", i, "input", e.target.value)} className="w-1/2 p-2 text-xs rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600" />
                                     <textarea value={form.TestCaseOutputs[i].output} onChange={e => updateArray("TestCaseOutputs", i, "output", e.target.value)} className="w-1/2 p-2 text-xs rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600" />
                                     <button onClick={() => removeRow("TestCaseInputs", "TestCaseOutputs", i)} className="text-red-500 px-2">✕</button>
