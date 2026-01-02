@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import MonacoEditor from "../editor/MonacoEditor";
 import { fetchAddProblemStart } from "../../data_store/add_problem_reducer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function AddProblemModal({
     isOpen,
@@ -12,10 +12,13 @@ export default function AddProblemModal({
     categories = []
 }) {
     const dispatch = useDispatch();
+    const addProblemResponse = useSelector(state => state.addProblem);
+    const { loading, error, data } = addProblemResponse;
 
     const [previewMode, setPreviewMode] = useState(false);
     const [language, setLanguage] = useState("cpp");
-
+    const [spinner, setSpinner] = useState(false);
+    const [errorMsg, setErrorMsg] = useState("");
 
     /* ================= SINGLE SOURCE OF TRUTH ================= */
 
@@ -62,8 +65,6 @@ export default function AddProblemModal({
         }));
     }, [isOpen, levels, categories]);
 
-    if (!isOpen) return null;
-
     /* ================= HELPERS ================= */
 
     const updateArray = (key, index, field, value) => {
@@ -90,13 +91,30 @@ export default function AddProblemModal({
         }));
     };
 
+    useEffect(() => {
+        if (loading) {
+            setSpinner(true);
+            setErrorMsg("");
+            return;
+        } else if (error) {
+            setSpinner(false);
+            setErrorMsg(error);
+            return;
+        } else if (data) {
+            setSpinner(false);
+            onClose();
+        }
+
+    }, [loading, error, data]);
+
     const submitForm = () => {
-        console.log(form);
 
         dispatch(fetchAddProblemStart({
             form: form
         }));
     }
+
+    if (!isOpen) return null;
 
     return (
         <div onClick={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
@@ -206,8 +224,38 @@ export default function AddProblemModal({
 
                 {/* ================= FOOTER ================= */}
                 <div className="flex justify-end gap-3 p-3">
-                    <button onClick={onClose} className="h-10 min-w-[90px] flex items-center justify-center rounded-lg border bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-[#2a2a2a] dark:text-gray-200 dark:border-gray-700 dark:hover:bg-[#333333]">Cancel</button>
-                    <button onClick={() => submitForm()} className="h-10 min-w-[110px] flex items-center justify-center rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">Add Problem</button>
+                    {errorMsg && (
+                        <div className="text-sm text-red-500 font-medium mb-2 text-center max-w-[600px] mx-auto">
+                            {errorMsg}
+                        </div>
+                    )}
+                    <button
+                        onClick={submitForm}
+                        disabled={spinner}
+                        className={`px-8 py-2
+                                    rounded-lg
+                                    text-sm font-semibold
+                                    flex items-center gap-2
+                                    ${spinner ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"} text-white`}
+                    >
+                        {spinner && (
+                            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        )}
+                        Add Problem
+                    </button>
+
+                    <button
+                        onClick={onClose}
+                        disabled={spinner}
+                        className={`
+                                    px-5 py-2
+                                    rounded-lg
+                                    text-sm font-semibold
+                                    flex items-center gap-2
+                                    ${spinner ? "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"
+                                : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"}`}>
+                        Cancel
+                    </button>
                 </div>
             </div>
         </div >

@@ -21,7 +21,7 @@ function* fetchAddProblemSaga(action) {
         yield put(fetchAddProblemSuccess(response.data));
 
     } catch (error) {
-        yield put(fetchAddProblemFailure(error.message));
+        yield put(fetchAddProblemFailure(error.response.data.error));
     }
 }
 

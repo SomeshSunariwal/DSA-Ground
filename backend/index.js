@@ -230,6 +230,7 @@ app.post("/api/prettify-code", async (req, res) => {
 app.post("/api/add-problem", async (req, res) => {
     logRequest(req)
     try {
+        // await sleep(5 * 1000)
         const data = req.body;
 
         const {
@@ -307,6 +308,10 @@ app.post("/api/add-problem", async (req, res) => {
         });
     }
 });
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 
 function logRequest(req) {

@@ -645,10 +645,7 @@ int main() {
                         <i className="fas fa-paper-plane text-xs"></i>
                     </button>
                 </div>
-
             </PanelCard>
-
-
         </ResizableSplit>
     );
 }
